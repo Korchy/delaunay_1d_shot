@@ -17,6 +17,7 @@ class DELAUNAY_VORONOI_1D_PT_panel(Panel):
 	bl_category = '1D'
 
 	def draw(self, context):
+		self.layout.label(text='Projection to')
 		row = self.layout.row()
 		row.prop(context.window_manager.delaunay_voronoi_1d_opts, 'projection', expand=True)
 		self.layout.prop(context.window_manager.delaunay_voronoi_1d_opts, 'remove_geometry')
