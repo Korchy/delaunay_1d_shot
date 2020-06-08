@@ -17,7 +17,7 @@ from . import delaunay_voronoi_1d
 from . import delaunay_voronoi_1d_options
 
 bl_info = {
-    'name': 'Delaunay 1D Shooter',
+    'name': 'Delaunay 1D Shot',
     'description': 'Points cloud Delaunay triangulation by projection from view',
     'author': 'Nikita Akimov',
     'version': (1, 0, 0),
