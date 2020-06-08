@@ -7,7 +7,7 @@ bl_info = {
 	"author": "Domlysz",
 	'license': 'GPL',
 	'deps': '',
-	"version": (1, 3),
+	"version": (1, 4),
 	"blender": (2, 7, 0),
 	"location": "View3D > Tools > GIS",
 	"warning": "",
