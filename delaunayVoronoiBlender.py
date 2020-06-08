@@ -3,6 +3,7 @@ import bpy
 
 from .DelaunayVoronoi import computeVoronoiDiagram, computeDelaunayTriangulation
 import bpy_extras
+import bmesh
 
 
 class Point:
@@ -38,7 +39,7 @@ class ToolsPanelDelaunay(bpy.types.Panel):
 	bl_category = "GIS"#Tab
 	bl_label = "Delaunay Voronoi"
 	bl_space_type = "VIEW_3D"
-	bl_context = "objectmode"
+	# bl_context = "objectmode"
 	bl_region_type = "TOOLS"
 
 	def draw(self, context):
@@ -53,12 +54,15 @@ class OBJECT_OT_TriangulateButton(bpy.types.Operator):
 
 	def execute(self, context):
 		#Get selected obj
-		objs = bpy.context.selected_objects
-		if len(objs) == 0 or len(objs)>1:
-			self.report({'INFO'}, "Selection is empty or too much object selected")
-			print("Selection is empty or too much object selected")
-			return {'FINISHED'}
-		obj = objs[0]
+		# objs = bpy.context.selected_objects
+		# if len(objs) == 0 or len(objs)>1:
+		# 	self.report({'INFO'}, "Selection is empty or too much object selected")
+		# 	print("Selection is empty or too much object selected")
+		# 	return {'FINISHED'}
+		# obj = objs[0]
+
+		obj = bpy.context.active_object
+
 		if obj.type != 'MESH':
 			self.report({'INFO'}, "Selection isn't a mesh")
 			print("Selection isn't a mesh")
@@ -72,7 +76,7 @@ class OBJECT_OT_TriangulateButton(bpy.types.Operator):
 		vertsPts1 = [bpy_extras.object_utils.world_to_camera_view(bpy.context.scene, bpy.data.objects['Camera'], vertex.co) for vertex in mesh.vertices]
 		#Remove duplicate
 		verts= [[vert.x, vert.y, vert.z] for vert in vertsPts]
-		verts1= [[vert.x, vert.y, 1] for vert in vertsPts1]
+		verts1= [[vert.x, vert.y] for vert in vertsPts1]
 		nDupli,nZcolinear = unique(verts)
 		nVerts=len(verts)
 		print(str(nDupli)+" duplicates points ignored")
@@ -89,30 +93,45 @@ class OBJECT_OT_TriangulateButton(bpy.types.Operator):
 		#Triangulate
 		print("Triangulate "+str(nVerts)+" points...")
 		vertsPts= [Point(vert[0], vert[1], vert[2]) for vert in verts]
-		vertsPts1= [Point(vert[0], vert[1], vert[2]) for vert in verts1]
+		vertsPts1= [Point(vert[0], vert[1], None) for vert in verts1]
 		# triangles=computeDelaunayTriangulation(vertsPts)
 		triangles=computeDelaunayTriangulation(vertsPts1)
-		triangles=[tuple(reversed(tri)) for tri in triangles]#reverse point order --> if all triangles are specified anticlockwise then all faces up
-		print(str(len(triangles))+" triangles")
-		#Create new mesh structure
-		print("Create mesh...")
-		tinMesh = bpy.data.meshes.new("TIN") #create a new mesh
-		tinMesh.from_pydata(verts, [], triangles) #Fill the mesh with triangles
-		tinMesh.update(calc_edges=True) #Update mesh with new data
-		#Create an object with that mesh
-		tinObj = bpy.data.objects.new("TIN", tinMesh)
-		#Place object
-		bpy.ops.view3d.snap_cursor_to_selected()#move 3d-cursor
-		tinObj.location = bpy.context.scene.cursor_location #position object at 3d-cursor
-		tinObj.rotation_euler = r
-		tinObj.scale = s
-		#Update scene
-		bpy.context.scene.objects.link(tinObj) #Link object to scene
-		bpy.context.scene.objects.active = tinObj
-		tinObj.select = True
-		obj.select = False
-		#Report
-		self.report({'INFO'}, "Mesh created ("+str(len(triangles))+" triangles)")
+		triangles=[tuple(reversed(tri)) for tri in triangles]	#reverse point order --> if all triangles are specified anticlockwise then all faces up
+
+		# print(triangles)
+
+		bm = bmesh.new()
+		# bm.from_mesh(mesh)
+		bm = bmesh.from_edit_mesh(mesh)
+		bm.verts.ensure_lookup_table()
+		for triangle in triangles:
+			v0 = bm.verts[triangle[0]]
+			v1 = bm.verts[triangle[1]]
+			v2 = bm.verts[triangle[2]]
+			bm.faces.new([v0, v1, v2])
+		bmesh.update_edit_mesh(mesh)
+		bm.free()
+
+		# print(str(len(triangles))+" triangles")
+		# #Create new mesh structure
+		# print("Create mesh...")
+		# tinMesh = bpy.data.meshes.new("TIN") #create a new mesh
+		# tinMesh.from_pydata(verts, [], triangles) #Fill the mesh with triangles
+		# tinMesh.update(calc_edges=True) #Update mesh with new data
+		# #Create an object with that mesh
+		# tinObj = bpy.data.objects.new("TIN", tinMesh)
+		# #Place object
+		# bpy.ops.view3d.snap_cursor_to_selected()#move 3d-cursor
+		# tinObj.location = bpy.context.scene.cursor_location #position object at 3d-cursor
+		# tinObj.rotation_euler = r
+		# tinObj.scale = s
+		# #Update scene
+		# bpy.context.scene.objects.link(tinObj) #Link object to scene
+		# bpy.context.scene.objects.active = tinObj
+		# tinObj.select = True
+		# obj.select = False
+		# #Report
+		# self.report({'INFO'}, "Mesh created ("+str(len(triangles))+" triangles)")
 		return {'FINISHED'}
 
 
