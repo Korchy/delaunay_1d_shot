@@ -30,19 +30,25 @@ class DELAUNAY_VORONOI_1D_OT_triangulate(Operator):
 		if obj.mode == 'EDIT':
 			bpy.ops.object.mode_set(mode='OBJECT')
 		selected_vertices = [vertex for vertex in mesh.vertices if vertex.select]
+		selected_vertices_co = [vertex.co for vertex in mesh.vertices if vertex.select]
 		selected_vertices_id = [vertex.index for vertex in mesh.vertices if vertex.select]
 		bpy.ops.object.mode_set(mode='EDIT')
 		if len(selected_vertices) < 3:
 			print('Less 3 vertices selected')
 			return {'FINISHED'}
 		if context.window_manager.delaunay_voronoi_1d_opts.remove_geometry:
-			# remove existed geometry (only edges and faces)
-			bpy.ops.mesh.delete(type='EDGE_FACE')
+			# remove existed geometry and recreates only vertices
+			bpy.ops.mesh.delete(type='VERT')
+			bm = bmesh.from_edit_mesh(mesh)
+			bm.verts.ensure_lookup_table()
+			for co in selected_vertices_co:
+				vertex = bm.verts.new(co)
+				vertex.select = True
+			bmesh.update_edit_mesh(mesh)
+			bm.free()
 			bpy.ops.object.mode_set(mode='OBJECT')
-			for vertex_id in selected_vertices_id:
-				mesh.vertices[vertex_id].select = True
-			# refresh selected vertices list - need to prevent crash, selected vertices before bpy.ops.mesh.delete breaks because this operator doesn't save selection
 			selected_vertices = [vertex for vertex in mesh.vertices if vertex.select]
+			selected_vertices_id = [vertex.index for vertex in mesh.vertices if vertex.select]
 			bpy.ops.object.mode_set(mode='EDIT')
 		if context.window_manager.delaunay_voronoi_1d_opts.projection == 'Camera':
 			# projection to active camera
