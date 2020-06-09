@@ -11,7 +11,7 @@ from bpy.utils import register_class, unregister_class
 
 class DELAUNAY_VORONOI_1D_PT_panel(Panel):
 	bl_idname = 'DELAUNAY_VORONOI_1D_PT_panel'
-	bl_label = 'Delaunay Shot'
+	bl_label = 'Delaunay Shot 1.0.1'
 	bl_space_type = 'VIEW_3D'
 	bl_region_type = 'TOOLS'
 	bl_category = '1D'
