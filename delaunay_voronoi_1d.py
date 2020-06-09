@@ -41,6 +41,8 @@ class DELAUNAY_VORONOI_1D_OT_triangulate(Operator):
 			bpy.ops.object.mode_set(mode='OBJECT')
 			for vertex_id in selected_vertices_id:
 				mesh.vertices[vertex_id].select = True
+			# refresh selected vertices list - need to prevent crash, selected vertices before bpy.ops.mesh.delete breaks because this operator doesn't save selection
+			selected_vertices = [vertex for vertex in mesh.vertices if vertex.select]
 			bpy.ops.object.mode_set(mode='EDIT')
 		if context.window_manager.delaunay_voronoi_1d_opts.projection == 'Camera':
 			# projection to active camera
