@@ -2,7 +2,7 @@
 # interplanety@interplanety.org
 #
 # GitHub
-#   https://github.com/Korchy/1d_delaunay_voronoi
+#   https://github.com/Korchy/delaunay_1d_shot
 #
 
 import bpy
