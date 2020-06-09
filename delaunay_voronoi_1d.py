@@ -45,7 +45,7 @@ class DELAUNAY_VORONOI_1D_OT_triangulate(Operator):
 				vertex = bm.verts.new(co)
 				vertex.select = True
 			bmesh.update_edit_mesh(mesh)
-			bm.free()
+			# bm.free()
 			bpy.ops.object.mode_set(mode='OBJECT')
 			selected_vertices = [vertex for vertex in mesh.vertices if vertex.select]
 			selected_vertices_id = [vertex.index for vertex in mesh.vertices if vertex.select]
@@ -71,7 +71,7 @@ class DELAUNAY_VORONOI_1D_OT_triangulate(Operator):
 			# set active material to new face
 			face.material_index = context.object.active_material_index
 		bmesh.update_edit_mesh(mesh)
-		bm.free()
+		# bm.free()
 		# recalculate normals
 		bpy.ops.mesh.normals_make_consistent(inside=False)
 		return {'FINISHED'}
