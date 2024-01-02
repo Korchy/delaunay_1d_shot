@@ -15,7 +15,7 @@ Projection to "Camera" or "View" - triangulated surface will be build with the s
 
 Current add-on version:
 -
-1.0.0.
+1.0.2.
 
 Blender versions:
 -
@@ -23,6 +23,9 @@ Blender versions:
 
 Version history:
 -
+1.0.2.
+- Integrated to the NA 1D Tools
+
 1.0.1.
 - Fixing bugs
 

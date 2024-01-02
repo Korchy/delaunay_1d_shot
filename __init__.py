@@ -21,7 +21,7 @@ bl_info = {
     'name': 'Delaunay 1D Shot',
     'description': 'Points cloud Delaunay triangulation by projection from view',
     'author': 'Nikita Akimov',
-    'version': (1, 0, 1),   # change in panel header too
+    'version': (1, 0, 2),   # change in panel header too
     'blender': (2, 79, 0),
     'location': '3DView window - T-panel - 1D',
     'wiki_url': 'https://github.com/Korchy/1d_delaunay_voronoi',
@@ -30,13 +30,15 @@ bl_info = {
 }
 
 
-def register():
+def register(ui=True):
     delaunay_voronoi_1d_options.register()
     delaunay_voronoi_1d.register()
-    delaunay_voronoi_1d_panel.register()
+    if ui:
+        delaunay_voronoi_1d_panel.register()
 
 
-def unregister():
-    delaunay_voronoi_1d_panel.unregister()
+def unregister(ui=True):
+    if ui:
+        delaunay_voronoi_1d_panel.unregister()
     delaunay_voronoi_1d.unregister()
     delaunay_voronoi_1d_options.unregister()
